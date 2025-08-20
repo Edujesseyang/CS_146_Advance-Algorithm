@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+// This is a test for run time of ArrayList vs LinkedList
+
 public class Timing {
 
     public static void main(String[] args)
