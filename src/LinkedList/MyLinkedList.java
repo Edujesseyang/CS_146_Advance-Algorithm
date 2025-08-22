@@ -2,7 +2,7 @@ package LinkedList;
 
 public class MyLinkedList {
     private class Node {
-        private int val;
+        private Integer val;
         private Node next;
         private Node prev;
 
@@ -11,19 +11,29 @@ public class MyLinkedList {
         }
     }
 
-    private class Iterator {
-        private Node node;
+    private class MyIterator {
+        private Node current;
 
-        private Iterator() {
-            this.node = sentinel.next;
+        private MyIterator() {
+            this.current = sentinel;
         }
 
-        private void next() {
-            node = node.next;
+        private Node next() {
+            current = current.next;
+            return current;
         }
 
-        private boolean isNext() {
-            return node != sentinel;
+        private Node prev() {
+            current = current.prev;
+            return current;
+        }
+
+        private boolean hasNext() {
+            return current.next != sentinel;
+        }
+
+        private boolean hasPrev() {
+            return current.prev != sentinel;
         }
     }
 
@@ -40,7 +50,11 @@ public class MyLinkedList {
         return sentinel.next == sentinel;
     }
 
-    public void addBack(int val) {
+    public int getSize() {
+        return this.size;
+    }
+
+    public void addLast(int val) {
         Node newNode = new Node(val);
         newNode.next = sentinel;
         newNode.prev = sentinel.prev;
@@ -49,7 +63,7 @@ public class MyLinkedList {
         size++;
     }
 
-    public void addFront(int val) {
+    public void addFirst(int val) {
         Node newNode = new Node(val);
         newNode.prev = sentinel;
         newNode.next = sentinel.next;
@@ -58,12 +72,83 @@ public class MyLinkedList {
         size++;
     }
 
+    public Integer pollFirst() {
+        if (this.isEmpty()) {
+            return null;
+        }
+
+        Node oldFirst = sentinel.next;
+        Node newFirst = oldFirst.next;
+
+        sentinel.next = newFirst;
+        newFirst.prev = sentinel;
+
+        oldFirst.next = oldFirst.prev = null;
+        return oldFirst.val;
+    }
+
+    public Integer pollLast() {
+        if (this.isEmpty()) {
+            return null;
+        }
+
+        Node oldLast = sentinel.prev;
+        Node newLast = oldLast.prev;
+
+        sentinel.prev = newLast;
+        newLast.next = sentinel;
+
+        oldLast.next = oldLast.prev = null;
+        return oldLast.val;
+    }
+
+    public Integer get(int index) {
+        return 0;
+    }
+
+    public void add(int index, int val) {
+        // special cases
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index out of bound: (0 - " + size + ")");
+        }
+        if (index == 0) {
+            this.addFirst(val);
+            return;
+        }
+        if (index == size) {
+            this.addLast(val);
+            return;
+        }
+
+        // iterate to correct position
+        MyIterator iter = new MyIterator();
+        if (index <= size / 2) {
+            for (int i = 0; i < index; i++) {
+                iter.next();
+            }
+        } else {
+            for (int i = 0; i < size - index + 1; i++) {
+                iter.prev();
+            }
+        }
+
+        // add connecting
+        Node insertPrev = iter.current;
+        Node insertNext = insertPrev.next;
+        Node newNode = new Node(val);
+        newNode.prev = insertPrev;
+        newNode.next = insertNext;
+        insertPrev.next = newNode;
+        insertNext.prev = newNode;
+        size++;
+    }
+
 
     public void printList() {
-        Iterator iter = new Iterator();
-        while (iter.isNext()) {
-            System.out.println(iter.node.val + ", ");
+        MyIterator iter = new MyIterator();
+        while (iter.hasNext()) {
+            System.out.print(iter.next().val + ", ");
         }
-        iter.next();
+        System.out.println();
     }
 }
