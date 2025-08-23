@@ -1,7 +1,7 @@
 package LinkedList;
 
 public class MyLinkedList {
-    private class Node {
+    private static class Node {
         private Integer val;
         private Node next;
         private Node prev;
@@ -84,6 +84,7 @@ public class MyLinkedList {
         newFirst.prev = sentinel;
 
         oldFirst.next = oldFirst.prev = null;
+        size--;
         return oldFirst.val;
     }
 
@@ -99,18 +100,53 @@ public class MyLinkedList {
         newLast.next = sentinel;
 
         oldLast.next = oldLast.prev = null;
+        size--;
         return oldLast.val;
     }
 
+    public Integer peekFirst() {
+        return sentinel.next.val;
+    }
+
+    public Integer peekLast() {
+        return sentinel.prev.val;
+    }
+
+    private Node nodeAt(int index) {
+        MyIterator iter = new MyIterator();
+        if (index <= size / 2) {
+            for (int i = 0; i <= index; i++) {
+                iter.next();
+            }
+        } else {
+            for (int i = 0; i < size - index; i++) {
+                iter.prev();
+            }
+        }
+        return iter.current;
+    }
+
     public Integer get(int index) {
-        return 0;
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index is out of bound: (0 - " + (size - 1) + ")");
+        }
+        return this.nodeAt(index).val;
+    }
+
+    public void replace(int index, int val) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index is out of bound: (0 - " + (size - 1) + ")");
+        }
+        Node modifyNode = this.nodeAt(index);
+        modifyNode.val = val;
     }
 
     public void add(int index, int val) {
         // special cases
         if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index out of bound: (0 - " + size + ")");
+            throw new IndexOutOfBoundsException("Index is out of bound: (0 - " + size + ")");
         }
+
         if (index == 0) {
             this.addFirst(val);
             return;
@@ -120,20 +156,8 @@ public class MyLinkedList {
             return;
         }
 
-        // iterate to correct position
-        MyIterator iter = new MyIterator();
-        if (index <= size / 2) {
-            for (int i = 0; i < index; i++) {
-                iter.next();
-            }
-        } else {
-            for (int i = 0; i < size - index + 1; i++) {
-                iter.prev();
-            }
-        }
-
         // add connecting
-        Node insertPrev = iter.current;
+        Node insertPrev = nodeAt(index).prev;
         Node insertNext = insertPrev.next;
         Node newNode = new Node(val);
         newNode.prev = insertPrev;
@@ -143,12 +167,57 @@ public class MyLinkedList {
         size++;
     }
 
+    public Integer poll(int index) {
+        // handling side cases
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index is out of bound: (0 - " + (size - 1) + ")");
+        }
 
-    public void printList() {
+        if (index == 0) {
+            return this.pollFirst();
+        }
+        if (index == size - 1) {
+            return this.pollLast();
+        }
+
+        Node deletingNode = nodeAt(index);
+        Node prevNode = deletingNode.prev;
+        Node nextNode = deletingNode.next;
+        prevNode.next = nextNode;
+        nextNode.prev = prevNode;
+
+        deletingNode.prev = deletingNode.next = null;
+        size--;
+        return deletingNode.val;
+    }
+
+    public boolean contains(int val) {
         MyIterator iter = new MyIterator();
         while (iter.hasNext()) {
-            System.out.print(iter.next().val + ", ");
+            if (iter.next().val == val) {
+                return true;
+            }
         }
-        System.out.println();
+        return false;
+    }
+
+    public String toString() {
+        if (this.isEmpty()) {
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        MyIterator iter = new MyIterator();
+        while (iter.hasNext()) {
+            sb.append(iter.next().val + ", ");
+        }
+        sb.delete(sb.length() - 2, sb.length());
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public void printList() {
+        String s = this.toString();
+        System.out.println(s);
     }
 }
