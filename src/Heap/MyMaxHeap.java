@@ -1,6 +1,7 @@
 package Heap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MyMaxHeap {
     private ArrayList<Integer> list;
@@ -31,6 +32,31 @@ public class MyMaxHeap {
                 swap(list, fatherInd, childInd);
                 childInd = fatherInd; // child is new father now
             }
+        }
+    }
+
+    public MyMaxHeap(ArrayList<Integer> input, ArrayList<Integer> input2) {
+        // join two inputs
+        input.addAll(input2);
+
+        // create list
+        list = new ArrayList<>();
+        for (int i = 0; i < input.size(); i++) { // prefill 0s
+            list.add(0);
+        }
+        // init i at the last element
+        int i = input.size() - 1;
+        while (i >= 0) { // stop when i < 0
+            list.set(i, input.get(i)); // add to the end
+
+            // check if children exists and child > father
+            if (2 * i + 2 < list.size() && list.get(2 * i + 2) > list.get(i)) { // right child
+                swap(list, 2 * i + 2, i); // swap them if so
+            }
+            if (2 * i + 1 < list.size() && list.get(2 * i + 1) > list.get(i)) { // left child
+                swap(list, 2 * i + 1, i); // swap them if so
+            }
+            i--;
         }
     }
 
