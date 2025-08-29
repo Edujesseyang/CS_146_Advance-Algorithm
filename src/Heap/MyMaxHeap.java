@@ -1,10 +1,9 @@
 package Heap;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MyMaxHeap {
-    private List<Integer> list;
+    private ArrayList<Integer> list;
 
     public MyMaxHeap() {
         list = new ArrayList<>();
@@ -13,21 +12,32 @@ public class MyMaxHeap {
     public MyMaxHeap(ArrayList<Integer> input) {
         // new a list
         list = new ArrayList<>();
-        list.add(input.get(0));
+        if (input.isEmpty()) {
+            return;
+        }
 
-        // add every element to list from input, check if it father is smaller
-        for (int i = 1; i < input.size(); i++) {
+        // add every element to list from input, check if its father is smaller
+        for (int i = 0; i < input.size(); i++) {
             list.add(input.get(i));
-            int fatherInd = (i - 1) / 2;
-
+            int childInd = i;
             // while father is smaller, keeping shifting new add to the root
-            while (fatherInd >= 0 && list.get(fatherInd) < list.get(i)) {
-                int tmp = list.get(i);
-                list.set(i, list.get(fatherInd));
-                list.set(fatherInd, tmp);
-                fatherInd = (fatherInd - 1) / 2;
+            while (childInd > 0) { // use childInd for to stop
+                int fatherInd = (childInd - 1) / 2;
+
+                if (list.get(fatherInd) >= list.get(childInd)) {
+                    break; // when father > child, break
+                }
+
+                swap(list, fatherInd, childInd);
+                childInd = fatherInd; // child is new father now
             }
         }
+    }
+
+    private void swap(ArrayList<Integer> list, int i, int j) {
+        int tmp = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, tmp);
     }
 
     public int size() {
@@ -36,8 +46,15 @@ public class MyMaxHeap {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Integer integer : list) {
-            sb.append(integer).append(", ");
+        int i = 0;
+        int nodesPerLevel = 1;
+        while (i < list.size()) {
+            while (i < list.size() && i + 1 < nodesPerLevel) {
+                sb.append(list.get(i)).append(" ");
+                i++;
+            }
+            nodesPerLevel *= 2;
+            sb.append("\n");
         }
         return sb.toString();
     }
