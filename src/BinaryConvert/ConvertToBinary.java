@@ -1,4 +1,4 @@
-package BinaryConversion;
+package BinaryConvert;
 
 import java.util.ArrayList;
 import java.util.List;
