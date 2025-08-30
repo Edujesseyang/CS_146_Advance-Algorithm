@@ -1,6 +1,7 @@
 package Heap;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class MyMaxHeap {
     private ArrayList<Integer> list;
@@ -19,17 +20,18 @@ public class MyMaxHeap {
         // add every element to list from input, check if its father is smaller
         for (int i = 0; i < input.size(); i++) {
             list.add(input.get(i));
-            int childInd = i;
+            int currentInd = i;
+            int fatherInd = getParentInd(currentInd);
             // while father is smaller, keeping shifting new add to the root
-            while (childInd > 0) { // use childInd for to stop
-                int fatherInd = (childInd - 1) / 2;
+            while (fatherInd >= 0) { // use childInd for to stop
 
-                if (list.get(fatherInd) >= list.get(childInd)) {
+                if (list.get(fatherInd) >= list.get(currentInd)) {
                     break; // when father > child, break
                 }
 
-                swap(list, fatherInd, childInd);
-                childInd = fatherInd; // child is new father now
+                swap(list, fatherInd, currentInd);
+                currentInd = fatherInd; // child is new father now
+                fatherInd = getParentInd(currentInd);
             }
         }
     }
@@ -88,7 +90,7 @@ public class MyMaxHeap {
         list.set(j, tmp);
     }
 
-    public int size() {
+    public int getSize() {
         return list.size();
     }
 
@@ -100,7 +102,25 @@ public class MyMaxHeap {
     }
 
     public int getMaxVal() {
+        if (getSize() == 0) {
+            throw new NoSuchElementException("Heap is empty");
+        }
         return list.get(0);
+    }
+
+    public int getMinVal() {
+        if (getSize() == 0) {
+            throw new NoSuchElementException("Heap is empty");
+        }
+        int firstLeaf = getSize() / 2;
+        int min = Integer.MAX_VALUE;
+        for (int i = firstLeaf + 1; i < getSize(); i++) {
+            int tmp = list.get(i);
+            if (tmp < min) {
+                min = tmp;
+            }
+        }
+        return min;
     }
 
     public void insert(int num) {
@@ -124,19 +144,23 @@ public class MyMaxHeap {
         int nodesPerLevel = 1;
         int lvl = getHeight();
         while (i < list.size()) {
-            while (i < list.size() && i + 1 < nodesPerLevel) {
-                sb.append(list.get(i));
-                for (int k = 0; k <= lvl; k++) {
-                    sb.append("  ");
+            for (int j = 0; j <= lvl * lvl; j++) {
+                sb.append(" "); // adding space before first element every level
+            }
+
+            for (int j = 0; j < nodesPerLevel; j++) { // adding correct amount of elements per lvl
+                if (i < getSize()) {
+                    sb.append(list.get(i)); // add element
+                }
+
+                for (int k = 0; k <= lvl * lvl; k++) {
+                    sb.append(" "); // add space between elements
                 }
                 i++;
             }
-            nodesPerLevel *= 2;
+            nodesPerLevel *= 2; // update num of elements for next lvl
             sb.append("\n");
-            for (int j = 0; j <= lvl; j++) {
-                sb.append("  ");
-            }
-            lvl--;
+            lvl--; // count down lvl
         }
         return sb.toString();
     }

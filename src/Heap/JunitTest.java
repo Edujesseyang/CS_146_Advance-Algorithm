@@ -11,7 +11,7 @@ public class JunitTest {
     public void testBuild() {
         MyMaxHeap h1 = new MyMaxHeap();
         assertNotNull(h1);
-        assertEquals(0, h1.size());
+        assertEquals(0, h1.getSize());
         assertEquals(0, h1.getHeight());
 
         ArrayList<Integer> l1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, -5, 6, 7, 8, 9));
@@ -22,10 +22,10 @@ public class JunitTest {
         assertNotNull(h2);
         assertNotNull(h3);
         assertEquals(9, h2.getMaxVal());
-        assertEquals(9, h2.size());
+        assertEquals(9, h2.getSize());
         assertEquals(4, h2.getHeight());
         assertEquals(900, h3.getMaxVal());
-        assertEquals(27, h3.size());
+        assertEquals(27, h3.getSize());
         assertEquals(5, h3.getHeight());
     }
 
