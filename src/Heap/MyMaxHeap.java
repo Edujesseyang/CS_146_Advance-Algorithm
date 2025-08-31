@@ -29,7 +29,7 @@ public class MyMaxHeap {
                     break; // when father > child, break
                 }
 
-                swap(list, fatherInd, currentInd);
+                swap(fatherInd, currentInd);
                 currentInd = fatherInd; // child is new father now
                 fatherInd = getParentInd(currentInd);
             }
@@ -66,7 +66,7 @@ public class MyMaxHeap {
                     break;
                 }
 
-                swap(list, current, largerChildInd); // swap father and larger child
+                swap(current, largerChildInd); // swap father and larger child
                 current = largerChildInd; // key, now the cur goes to child position, moving down to check child's children
             }
         }
@@ -84,7 +84,7 @@ public class MyMaxHeap {
         return 2 * i + 2;
     }
 
-    private void swap(ArrayList<Integer> list, int i, int j) {
+    private void swap(int i, int j) {
         int tmp = list.get(i);
         list.set(i, list.get(j));
         list.set(j, tmp);
@@ -132,10 +132,23 @@ public class MyMaxHeap {
             if (list.get(currentInd) <= list.get(parentInd)) {
                 return; // if cur smaller or equal to its father, return
             }
-            swap(list, currentInd, parentInd); // if not, swap them
+            swap(currentInd, parentInd); // if not, swap them
             currentInd = parentInd; // cur in on its father's position
             parentInd = getParentInd(currentInd); // find new parent's index
         }
+    }
+
+
+    public int delete(int index) {
+        //swap last and deleting
+        int deletingVal = list.get(index);
+        swap(index, getSize() - 1);
+        list.remove(getSize() - 1); // remove deleting element from the list
+
+        // find parent of the deleting index
+        int parentInd = getParentInd(index);
+
+        return 0;
     }
 
     public String toString() {
@@ -165,4 +178,65 @@ public class MyMaxHeap {
         return sb.toString();
     }
 
+    private void shiftUpRecursively(int index) {
+        int parentInd = getParentInd(index);
+        if (parentInd < 0 || list.get(parentInd) >= list.get(index)) {
+            return;
+        }
+        swap(parentInd, index);
+        shiftUpRecursively(parentInd);
+    }
+
+    private void shiftDownRecursively(int index) {
+        if (index >= getSize() / 2) {
+            return;  // base case: input is a leaf
+        }
+        // find its children
+        int leftChildInd = getLeftChildInd(index);
+        int rightChildInd = getRightChildInd(index);
+
+        int largest = index; // init the largest one is itself, between 3 of them
+        if (leftChildInd < getSize() && list.get(leftChildInd) > list.get(index)) {
+            largest = leftChildInd; // update larger if leftChild is greater
+        }
+        if (rightChildInd < getSize() && list.get(rightChildInd) > list.get(index)) {
+            largest = rightChildInd; // update larger if rightChild is greater
+        }
+
+        if (largest == index) { // if no update at all, stop recursion
+            return;
+        }
+        swap(index, largest); // swap
+        shiftDownRecursively(largest); // recursive call
+    }
+
+    private void shiftUp(int index) {
+        while (index > 0) { // if index == 0, we can just stop
+            int parentInd = getParentInd(index);
+            if (list.get(parentInd) > list.get(index)) {
+                return; // heap structure holds, stop
+            }
+            swap(parentInd, index);
+            index = parentInd;
+        }
+    }
+
+    private void shiftDown(int index) {
+        while (index < getSize() / 2) { // only for parent, don't care about leaves
+            int leftChildInd = getLeftChildInd(index);
+            int rightChildInd = getRightChildInd(index);
+
+            int largest = leftChildInd; // assume left is greater
+
+            if (rightChildInd < getSize() && list.get(rightChildInd) > list.get(leftChildInd)) {
+                largest = rightChildInd; // compare left vs right, update largest
+            }
+            if (list.get(index) >= list.get(largest)) { // if i is greater than largest, done
+                return;
+            }
+            swap(largest, index); // swap
+            index = largest; // update i
+
+        }
+    }
 }
