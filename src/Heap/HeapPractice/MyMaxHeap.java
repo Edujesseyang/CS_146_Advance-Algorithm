@@ -1,4 +1,4 @@
-package Heap;
+package Heap.HeapPractice;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
