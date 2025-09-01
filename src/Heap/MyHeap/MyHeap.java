@@ -1,22 +1,24 @@
 package Heap.MyHeap;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class MyHeap {
     ArrayList<Integer> heapList;
 
     public MyHeap() {
-        heapList = new ArrayList<>();
+        heapList = new ArrayList<>(); // constructing empty list
     }
 
+    @SafeVarargs
     public MyHeap(ArrayList<Integer>... lists) {
-        heapList = new ArrayList<>();
+        heapList = new ArrayList<>(); // init list
 
-        for (ArrayList<Integer> list : lists) {
+        for (ArrayList<Integer> list : lists) { // add all to list
             heapList.addAll(list);
         }
 
-        heapify();
+        heapify(); // heapify
     }
 
     public int size() {
@@ -31,7 +33,46 @@ public class MyHeap {
         return this.heapList.toString();
     }
 
-    
+    public void insert(int val) {
+        this.heapList.add(val); // put to the end
+        shiftUp(size() - 1); // shift up
+    }
+
+    public void insert(ArrayList<Integer> list) {
+        for (Integer integer : list) {
+            insert(integer); // insert all
+        }
+    }
+
+    public int delete(int i) {
+        if (i < 0 || i >= size()) {
+            throw new IndexOutOfBoundsException("Ouf of bound");
+        }
+        if (size() == 0) {
+            throw new NoSuchElementException("Empty heap");
+        }
+
+        int deletingVal = this.heapList.get(i);
+        swap(i, size() - 1);
+        this.heapList.remove(size() - 1);
+
+        int parent = getParent(i);
+        if (parent >= 0 && this.heapList.get(parent) < this.heapList.get(i)) {
+            shiftUp(i);
+            return deletingVal;
+        }
+        shiftDown(i, size() - 1);
+        return deletingVal;
+    }
+
+    public boolean contains(int val) {
+        for (int i = 0; i < size(); i++) {
+            if (this.heapList.get(i) == val) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     // helper methods:
@@ -92,6 +133,4 @@ public class MyHeap {
     private int getRightChild(int i) {
         return i * 2 + 2;
     }
-
-
 }
