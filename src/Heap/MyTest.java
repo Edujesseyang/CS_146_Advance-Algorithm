@@ -58,6 +58,11 @@ public class MyTest {
         }
         System.out.println("height = " + t5.getHeight());
 
+
+        // test 6
+        ArrayList<Integer> r1 = t4.copySorted();
+        System.out.println("sorted: " + r1);
+
     }
 
 }
