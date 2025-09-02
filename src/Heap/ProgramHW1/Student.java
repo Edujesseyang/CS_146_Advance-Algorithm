@@ -1,4 +1,4 @@
-package ProgramHW1;
+package Heap.ProgramHW1;
 
 public class Student implements Comparable<Student>
 {

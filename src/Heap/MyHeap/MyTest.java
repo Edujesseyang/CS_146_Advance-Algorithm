@@ -46,6 +46,7 @@ public class MyTest {
         assertEquals(100, t2.getMax());
         t3.insert(800);
         assertEquals(800, t3.getMax());
+
     }
 
     @Test

@@ -1,5 +1,6 @@
-package ProgramHW1;
+package Heap.ProgramHW1;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -41,18 +42,56 @@ public class MaxHeap {
         //following the insert algorithm from the videos.
 
         // Solution:
+        if (elt == null) { // check if input is valid
+            throw new InvalidParameterException("null input");
+        }
+
+        if (students.isEmpty()) { // case: empty list
+            students.add(elt);
+            return;
+        }
+
         students.add(elt); // add to the end
         int currentInd = students.size() - 1; // init cur index
         int parentInd = parent(currentInd); // find cur's father index
 
-        while (parentInd >= 0) {
+        while (parentInd >= 0) { // if father is present
             if (students.get(currentInd).compareTo(students.get(parentInd)) <= 0) {
-                return; // if cur < its father, done
+                return; // if cur < its father, done, return
             }
             swap(currentInd, parentInd);
             currentInd = parentInd; // if not, update cur to its father's position
             parentInd = parent(currentInd); // find new father index
         }
+    }
+
+    // just want to try
+    public void insertRecursively(Student elt) {
+        if (elt == null) { // check if input is valid
+            throw new InvalidParameterException("Null parameter");
+        }
+
+        if (students.isEmpty()) { // case: empty list
+            students.add(elt);
+            return;
+        }
+
+        students.add(elt); // add to the end
+        bubbleUp(students.size() - 1); // shift the new adding element all the way up
+    }
+
+    private void bubbleUp(int index) {
+        if (index <= 0) { // base case: input is the root, or negative
+            return;
+        }
+
+        int parentInd = parent(index); // find parent
+        if (students.get(parentInd).compareTo(students.get(index)) >= 0) {
+            return; // if parent is bigger, done
+        }
+
+        swap(index, parentInd); // swap current and it's parent
+        bubbleUp(parentInd); // call recursion, input is the parent
     }
 
     public void addGrade(Student elt, double gradePointsPerUnit, int units) {
@@ -61,19 +100,9 @@ public class MaxHeap {
         //the changeKey algorithm from the videos.
 
         // Solution:
-        int currentInd = students.indexOf(elt); // get target's index
-        elt.addGrade(gradePointsPerUnit, units); // update target student
-        int parentInd = parent(currentInd);
-
-        while (parentInd >= 0) { // stop when cur has no parent
-            if (students.get(currentInd).compareTo(students.get(parentInd)) <= 0) {
-                return; // when cur is smaller than its parent, done
-            }
-
-            swap(currentInd, parentInd); // if not, swap them
-            currentInd = parentInd; // cur's parent becomes cur
-            parentInd = parent(currentInd); // find new parent
-        }
+        elt.addGrade(gradePointsPerUnit, units); // update target 
+        students.remove(elt); // remove target from the list
+        this.insert(elt); // add target back again
     }
 
     private int parent(int index) {
