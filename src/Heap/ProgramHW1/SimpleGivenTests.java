@@ -65,21 +65,5 @@ public class SimpleGivenTests {
         assertEquals(2.0, heap.extractMax().gpa(), .000001);
     }
 
-    @Test
-    public void insertRecursively() {
-        MaxHeap heap = new MaxHeap(10);
-        Student susan = new Student("Susan", 3, 6);
-        Student ben = new Student("Ben", 2.4, 10);
-        Student reed = new Student("Reed", 3.3, 3);
-        Student johnny = new Student("Johnny", 1, 4);
-        assertThrows(IndexOutOfBoundsException.class, heap::getMax);
-        heap.insertRecursively(johnny);
-        assertEquals(johnny, heap.getMax());
-        heap.insertRecursively(ben);
-        assertEquals(ben, heap.getMax());
-        heap.insertRecursively(susan);
-        assertEquals(susan, heap.getMax());
-        heap.insertRecursively(reed);
-        assertEquals(reed, heap.getMax());
-    }
+
 }

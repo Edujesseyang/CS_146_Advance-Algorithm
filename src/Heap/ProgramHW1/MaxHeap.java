@@ -39,81 +39,48 @@ public class MaxHeap {
     }
 
     public void insert(Student elt) {
-        //Please write me.  I should add the given student into the heap,
-        //following the insert algorithm from the videos.
-
-        // Solution:
-        if (elt == null) { // check if input is valid
-            throw new InvalidParameterException("null input");
-        }
-
-        if (students.isEmpty()) { // case: empty list
-            students.add(elt);
-            return;
-        }
-
-        students.add(elt); // add to the end
-        int currentInd = students.size() - 1; // init cur index
-        int parentInd = parent(currentInd); // find cur's father index
-
-        while (parentInd >= 0) { // if father is present
-            if (students.get(currentInd).compareTo(students.get(parentInd)) <= 0) {
-                return; // if cur < its father, done, return
-            }
-            swap(currentInd, parentInd);
-            currentInd = parentInd; // if not, update cur to its father's position
-            parentInd = parent(currentInd); // find new father index
-        }
-    }
-
-    // just want to try
-    public void insertRecursively(Student elt) {
-        if (elt == null) { // check if input is valid
+        if (elt == null) { // check if input is null
             throw new InvalidParameterException("Null parameter");
         }
 
-        if (students.isEmpty()) { // case: empty list
-            students.add(elt);
-            return;
-        }
-
         students.add(elt); // add to the end
-        bubbleUp(students.size() - 1); // shift the new adding element all the way up
-    }
-
-    private void bubbleUp(int index) {
-        if (index <= 0) { // base case: input is the root, or negative
-            return;
-        }
-
-        int parentInd = parent(index); // find parent
-        if (students.get(parentInd).compareTo(students.get(index)) >= 0) {
-            return; // if parent is bigger, done
-        }
-
-        swap(index, parentInd); // swap current and it's parent
-        bubbleUp(parentInd); // call recursion, input is the parent
+        bubbleUp(students.size() - 1); // bubble up the last new element
     }
 
     public void addGrade(Student elt, double gradePointsPerUnit, int units) {
-        //Please write me.  I should change the student's gpa (using a method
-        //from the student class), and then adjust the heap as needed using
-        //the changeKey algorithm from the videos.
+        if (elt == null) { // check if input is null
+            throw new InvalidParameterException("Null parameter");
+        }
 
-        // Solution:
         int currentInd = students.indexOf(elt); // get the index of the target
-        if(currentInd == -1){ // if student can't be found, throw exception
+        if (currentInd == -1) { // if student can't be found, throw exception
             throw new NoSuchElementException("No such this student present");
         }
 
-        elt.addGrade(gradePointsPerUnit, units); // update target
+        elt.addGrade(gradePointsPerUnit, units); // update the target
 
-        int parentInd = parent(currentInd);  // find cur's parent
-
-        if (students.get(parentInd).compareTo(students.get(currentInd)) < 0) {
-            bubbleUp(currentInd); // check if cur is greater than its parent, then is needs to be bubbleUp
+        // check if target needs bubbleUp
+        if (!bubbleUp(currentInd)) { // if target has been bubbled up at least once, it doesn't need bubble down
+            maxHeapify(currentInd); // otherwise, bubble it down
         }
-        maxHeapify(currentInd); // otherwise, drain down
+    }
+
+    private boolean bubbleUp(int index) {
+        if (index <= 0) { // if input is the root or negative
+            return false;
+        }
+
+        boolean isSwaped = false; // a flag to mark is the input element has been swaped with its parent
+
+        int parentInd = parent(index); // find parent
+        while (students.get(parentInd).compareTo(students.get(index)) < 0) {
+            swap(index, parentInd); // swap current and it's parent
+            isSwaped = true; // mark as it has been swapped
+            index = parentInd; // update current
+            parentInd = parent(index); // find new parent
+        }
+
+        return isSwaped;
     }
 
     private int parent(int index) {
