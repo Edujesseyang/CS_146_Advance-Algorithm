@@ -3,6 +3,7 @@ package Heap.ProgramHW1;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 public class MaxHeap {
     private ArrayList<Student> students;
@@ -100,9 +101,19 @@ public class MaxHeap {
         //the changeKey algorithm from the videos.
 
         // Solution:
-        elt.addGrade(gradePointsPerUnit, units); // update target 
-        students.remove(elt); // remove target from the list
-        this.insert(elt); // add target back again
+        int currentInd = students.indexOf(elt); // get the index of the target
+        if(currentInd == -1){ // if student can't be found, throw exception
+            throw new NoSuchElementException("No such this student present");
+        }
+
+        elt.addGrade(gradePointsPerUnit, units); // update target
+
+        int parentInd = parent(currentInd);  // find cur's parent
+
+        if (students.get(parentInd).compareTo(students.get(currentInd)) < 0) {
+            bubbleUp(currentInd); // check if cur is greater than its parent, then is needs to be bubbleUp
+        }
+        maxHeapify(currentInd); // otherwise, drain down
     }
 
     private int parent(int index) {

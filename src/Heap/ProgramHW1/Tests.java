@@ -1,7 +1,10 @@
 package Heap.ProgramHW1;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import java.security.InvalidParameterException;
 import java.util.*;
 
 public class Tests {
@@ -41,6 +44,13 @@ public class Tests {
         assertEquals(sushi, test1.extractMax());
         assertEquals(klee, test1.getMax());
         assertEquals(klee, test1.extractMax());
+
+        MaxHeap test2 = new MaxHeap(1);
+        try{
+            Student bestStudent = test2.getMax();
+        } catch(IndexOutOfBoundsException e){
+            assertEquals("No maximum value:  the heap is empty.", e.getMessage());
+        }
     }
 
     @Test
@@ -65,6 +75,12 @@ public class Tests {
         test1.insert(chloe);
         assertEquals(chloe, test1.getMax());
         assertEquals(6, test1.size());
+
+        try {
+            test1.insertRecursively(null);
+        } catch (InvalidParameterException e) {
+            assertEquals("Null parameter", e.getMessage());
+        }
     }
 
     @Test
@@ -89,6 +105,12 @@ public class Tests {
         test1.insertRecursively(chloe);
         assertEquals(chloe, test1.getMax());
         assertEquals(6, test1.size());
+
+        try {
+            test1.insertRecursively(null);
+        } catch (InvalidParameterException e) {
+            assertEquals("Null parameter", e.getMessage());
+        }
     }
 
     @Test
@@ -104,6 +126,11 @@ public class Tests {
         assertEquals(klee, test1.getMax());
         test1.addGrade(klee, -2.5, 3);
         assertEquals(sushi, test1.getMax());
+        try {
+            test1.addGrade(jesse, 2.3, 3);
+        } catch (NoSuchElementException e) {
+            assertEquals("No such this student present", e.getMessage());
+        }
     }
 
 }
