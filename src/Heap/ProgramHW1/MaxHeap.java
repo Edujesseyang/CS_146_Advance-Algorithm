@@ -66,10 +66,6 @@ public class MaxHeap {
     }
 
     private boolean bubbleUp(int index) {
-        if (index <= 0) { // if input is the root or negative
-            return false;
-        }
-
         boolean isSwaped = false; // a flag to mark is the input element has been swaped with its parent
 
         int parentInd = parent(index); // find parent
