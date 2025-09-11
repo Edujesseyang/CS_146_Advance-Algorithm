@@ -1,7 +1,9 @@
 package Heap.MyHeap;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 public class MyHeap {
     ArrayList<Integer> heapList;
@@ -72,6 +74,46 @@ public class MyHeap {
             }
         }
         return false;
+    }
+
+    /**
+     * return true if heap contain more than k elements that larger than val
+     *
+     * @param k   : number of elements that larger than val
+     * @param val : target val
+     * @return boolean
+     */
+    public boolean hasLargerThan(int k, int val) {
+        Queue<Integer> queue = new LinkedList<>();
+
+        int currentInd = 0;
+
+        if (heapList.get(0) > k) {
+            queue.add(heapList.get(currentInd));
+        }
+
+        while (!queue.isEmpty()) {
+            if (k <= 0) {
+                return true;
+            }
+
+            int currentNum = queue.poll();
+            if (currentNum > k) {
+                k--;
+            }
+            int left = getLeftChild(currentInd);
+            int right = getRightChild(currentInd);
+            if (left > k) {
+                queue.add(heapList.get(left));
+                currentInd = left;
+            }
+            if (right > k) {
+                queue.add(heapList.get(right));
+                currentInd = right;
+            }
+        }
+
+        return k <= 0;
     }
 
 
