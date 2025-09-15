@@ -132,6 +132,80 @@ public class Tests {
         jack.addGrade(3.8, 15);
         assertEquals(0, jesse.compareTo(jack));
         assertEquals(3.8, jack.gpa(), 0.0001);
+        assertEquals(jack.getIndex(), -1);
+        jack.setIndex(15);
+        assertEquals(jack.getIndex(), 15);
+
+        try {
+            jack.setIndex(-2);
+        } catch (IndexOutOfBoundsException e) {
+            assertEquals("Index out of bound", e.getMessage());
+        }
+
+
+    }
+
+    // part2:
+
+    @Test
+    public void testExtractMaxOnEmptyHeap() {
+        MaxHeap t1 = new MaxHeap(20);
+        try { // test extractMax on empty heap
+            t1.extractMax();
+        } catch (IndexOutOfBoundsException e) {
+            assertEquals("No maximum value:  the heap is empty.", e.getMessage());
+        }
+
+        MaxHeap t2 = new MaxHeap(allStudents);
+        while (t2.size() > 0) {
+            assertEquals(0, t2.getMax().getIndex());
+            t2.extractMax();
+        }
+        assertEquals(0, t2.size());
+
+        MaxHeap t3 = new MaxHeap(allStudents);
+
+
+    }
+
+
+    @Test
+    public void testObjectIndex() {
+        MaxHeap t3 = new MaxHeap(10);
+        t3.insert(klee);
+        assertEquals(0, t3.getMax().getIndex());
+        assertEquals(klee, t3.getMax());
+
+        t3.insert(lucky);
+        assertEquals(0, t3.getMax().getIndex());
+        assertEquals(lucky, t3.getMax());
+
+        t3.insert(jesse);
+        assertEquals(0, t3.getMax().getIndex());
+        assertEquals(jesse, t3.getMax());
+
+        t3.addGrade(klee, 4, 100);
+        assertEquals(0, t3.getMax().getIndex());
+        assertEquals(klee, t3.getMax());
+        assertEquals(0, klee.getIndex());
+
+        t3.addGrade(lucky, 4, 100);
+        assertEquals(0, t3.getMax().getIndex());
+        assertEquals(lucky, t3.getMax());
+        assertEquals(0, lucky.getIndex());
+
+        t3.addGrade(jesse, 4, 100);
+        assertEquals(0, t3.getMax().getIndex());
+        assertEquals(jesse, t3.getMax());
+        assertEquals(0, jesse.getIndex());
+
+        // try to find unexist student
+        Student nobody = new Student("Nobody");
+        try {
+            t3.addGrade(nobody, 4, 12);
+        } catch (NoSuchElementException e) {
+            assertEquals("No such this student present", e.getMessage());
+        }
     }
 
 }
