@@ -14,8 +14,14 @@ public class MaxHeap {
 
     public MaxHeap(Collection<Student> collection) {
         students = new ArrayList<Student>(collection);
+
         for (int i = size() / 2 - 1; i >= 0; i--) {
             maxHeapify(i);
+        }
+
+        // part2: init all students' index
+        for (int i = 0; i < students.size(); i++) {
+            students.get(i).setIndex(i);
         }
     }
 
@@ -27,10 +33,19 @@ public class MaxHeap {
     }
 
     public Student extractMax() {
+        if (size() < 1) {
+            throw new IndexOutOfBoundsException("No maximum value:  the heap is empty.");
+        }
+
         Student value = getMax();
         students.set(0, students.get(size() - 1));
+
+        students.get(0).setIndex(0); // part2:  change the max's index
+        value.setIndex(-1); // part2: change the last one's index
+
         students.remove(size() - 1);
         maxHeapify(0);
+
         return value;
     }
 
@@ -44,6 +59,7 @@ public class MaxHeap {
         }
 
         students.add(elt); // add to the end
+        elt.setIndex(students.size() - 1);
         bubbleUp(students.size() - 1); // bubble up the last new element
     }
 
@@ -52,7 +68,7 @@ public class MaxHeap {
             throw new InvalidParameterException("Null parameter");
         }
 
-        int currentInd = students.indexOf(elt); // get the index of the target
+        int currentInd = elt.getIndex(); // get the index of the target (part2 new)
         if (currentInd == -1) { // if student can't be found, throw exception
             throw new NoSuchElementException("No such this student present");
         }
@@ -65,18 +81,24 @@ public class MaxHeap {
         }
     }
 
-    private boolean bubbleUp(int index) {
-        boolean isSwaped = false; // a flag to mark is the input element has been swaped with its parent
+    // private helper methods:
 
-        int parentInd = parent(index); // find parent
-        while (students.get(parentInd).compareTo(students.get(index)) < 0) {
+    private boolean bubbleUp(int index) {
+        boolean isSwapped = false; // a flag to mark if the input element has been swapped
+
+        while (index > 0) {
+            int parentInd = parent(index); // find parent
+
+            if (students.get(parentInd).compareTo(students.get(index)) >= 0) {
+                break; // break if parent is already bigger
+            }
+
             swap(index, parentInd); // swap current and it's parent
-            isSwaped = true; // mark as it has been swapped
+            isSwapped = true; // mark as it has been swapped
             index = parentInd; // update current
-            parentInd = parent(index); // find new parent
         }
 
-        return isSwaped;
+        return isSwapped;
     }
 
     private int parent(int index) {
@@ -92,9 +114,15 @@ public class MaxHeap {
     }
 
     private void swap(int from, int to) {
-        Student val = students.get(from);
-        students.set(from, students.get(to));
-        students.set(to, val);
+        Student fromObj = students.get(from);
+        Student toObj = students.get(to);
+
+        students.set(from, toObj);
+        students.set(to, fromObj);
+
+        fromObj.setIndex(to); // part2: swap indexes
+        toObj.setIndex(from);
+
     }
 
     private void maxHeapify(int index) {
