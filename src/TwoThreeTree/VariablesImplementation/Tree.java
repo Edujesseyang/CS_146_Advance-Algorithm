@@ -2,7 +2,7 @@ package TwoThreeTree.VariablesImplementation;
 
 import java.util.*;
 
-public class Tree {
+class Tree {
     private class Node {
         Integer small, large; // small[0] is the key, small[1] is num of the key present
         Node left, mid, right, parent;
