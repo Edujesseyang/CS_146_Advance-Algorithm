@@ -1,4 +1,4 @@
-package TwoThreeTree;
+package TwoThreeTree.VariablesImplementation;
 
 import static org.junit.Assert.*;
 
