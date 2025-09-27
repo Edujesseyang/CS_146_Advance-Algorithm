@@ -1,77 +1,74 @@
 package TwoThreeTree.ArrayImplementation;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MyTree {
     private class Node {
-        ArrayList<Integer> keys;
-        ArrayList<Node> children;
-        Node parent;
-        int keyCount;
+        Integer[] keys = new Integer[3];
+        Node[] children = new Node[4];
+        Node parent = null;
+        int keyCount = 0;
 
         private Node() {
-        }
-
-        private Node(Integer integer) {
-            this.keys = new ArrayList<>(3);
-            this.children = new ArrayList<>(4);
-            this.keyCount = 0;
+            Arrays.fill(null, keys);
+            Arrays.fill(null, children);
         }
 
         private void addKey(Integer key) {
-            this.keys.add(key);
+            int positon = newKeyPosition(key);
+            keys[positon + 1] = keys[positon];
+            keys[positon] = key;
             keyCount++;
-            Collections.sort(keys);
         }
 
         private boolean isLeaf() {
-            for (Node n : children) {
-                if (n != null) {
-                    return false;
+            return children[0] == null;
+        }
+
+        private boolean contains(Integer key) {
+            for (Integer i : keys) {
+                if (Objects.equals(i, key)) {
+                    return true;
                 }
             }
-            return true;
+            return false;
+        }
+
+        private int newKeyPosition(Integer key) {
+            for (int i = 0; i < 3; i++) {
+                if (key.compareTo(keys[i]) > 0) {
+                    return i;
+                }
+            }
+            return 0;
         }
 
         private Node goToLeaf(Integer key) {
             Node current = this;
             while (!current.isLeaf()) {
-                if (current.keys.contains(key)) { // find duplicated key
-                    return null;
-                }
-                if (current.keyCount == 1) { // find a 1key node to add
-                    current.addKey(key);
+                if (current.contains(key)) { // find duplicated key
                     return null;
                 }
 
                 if (this.keyCount == 1) {
-                    if (key < current.keys.get(0)) {
-                        current = current.children.get(0);
+                    if (key < current.keys[0]) {
+                        current = current.children[0];
                     } else {
-                        current = current.children.get(2);
+                        current = current.children[1];
                     }
                 } else if (this.keyCount == 2) {
-                    if (key < current.keys.get(0)) {
-                        current = current.children.get(0);
-                    } else if (key < current.keys.get(1)) {
-                        current = current.children.get(2);
+                    if (key < current.keys[0]) {
+                        current = current.children[0];
+                    } else if (key < current.keys[1]) {
+                        current = current.children[2];
                     } else {
-                        current = current.children.get(1);
+                        current = current.children[1];
                     }
                 }
 
             }
             return current;
-        }
-
-        private boolean isKeyExists(Integer key) {
-            if (key != null) {
-                return key.equals(this.keys.get(0)) || key.equals(this.keys.get(1));
-            }
-            return false;
         }
 
         /**
