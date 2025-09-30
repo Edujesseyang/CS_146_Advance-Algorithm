@@ -49,8 +49,8 @@ public class Tree {
             return current;
         }
 
-        private void setChild(int i, Node child) {
-            children[i] = child;
+        private void setChild(int childInd, Node child) {
+            children[childInd] = child;
             if (child != null) {
                 child.parent = this;
             }
@@ -62,22 +62,19 @@ public class Tree {
                 Integer key1 = current.keys[0], key2 = current.keys[1], key3 = current.keys[2];
 
                 Node left = new Node();
-                left.keys[0] = key1; // key1 is left's key
-                left.keyCount = 1;
+                left.addKey(0,key1);// key1 is left's key
                 left.setChild(0, current.children[0]); // set left children,  cur's child1, child2 are the left's children
                 left.setChild(1, current.children[1]);
 
 
                 Node right = new Node();
-                right.keys[0] = key3; // key3 is right's key
-                right.keyCount = 1;
+                right.addKey(0,key3);// key3 is right's key
                 right.setChild(0, current.children[2]); // set right children,  cur's child3, child4 are the right's children
                 right.setChild(1, current.children[3]);
 
                 if (current.parent == null) { // current is root
                     Node newRoot = new Node();
-                    newRoot.keys[0] = key2;
-                    newRoot.keyCount = 1;
+                    newRoot.addKey(0, key1);
                     newRoot.setChild(0, left);
                     newRoot.setChild(1, right);
                     root = newRoot;
@@ -88,10 +85,10 @@ public class Tree {
                 Node parentOfCurrent = current.parent;
 
                 int childInd = 0; // childInd is also keyInd
-                while (parentOfCurrent.children[childInd] != current) childInd++;
+                while (parentOfCurrent.children[childInd] != current) childInd++; // find the correct childInd
 
 
-                // make space to new keys
+                // make space for new key
                 for (int i = parentOfCurrent.keyCount; i > childInd; i--) {
                     parentOfCurrent.keys[i] = parentOfCurrent.keys[i - 1];
                 }
@@ -102,7 +99,7 @@ public class Tree {
                     parentOfCurrent.children[i] = parentOfCurrent.children[i - 1];
                 }
 
-                // put left and right in to the space
+                // link the left and right child
                 parentOfCurrent.setChild(childInd, left);
                 parentOfCurrent.setChild(childInd + 1, right);
 

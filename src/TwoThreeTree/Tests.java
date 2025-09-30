@@ -19,13 +19,13 @@ public class Tests {
         }
         Tree t1 = new Tree(input);
         List<Integer> output = t1.toList();
-
-        Integer compare = output.get(0);
-        output.remove(0);
+        Integer compare = output.getFirst();
+        output.removeFirst();
         for (Integer i : output) {
             assertTrue(compare < i);
             compare = i;
         }
+        System.out.println(output);
     }
 
     @Test
