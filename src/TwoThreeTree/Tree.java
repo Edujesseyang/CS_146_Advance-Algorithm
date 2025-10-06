@@ -105,6 +105,63 @@ public class Tree {
                 current = parentOfCurrent; // keep handling its parent.
             }
         }
+
+        private Node findNode(Integer target) {
+            for (Integer key : keys) { // check all keys
+                if (Objects.equals(key, target)) { // found it, return this
+                    return this;
+                }
+            }
+
+            if (!this.isLeaf()) {
+                for (Node child : children) { // recursively check each child
+                    if (child != null) {
+                        child.findNode(target);
+                    }
+
+                }
+            }
+
+            return null;
+        }
+
+        private int subtreeSize() {
+
+            int result = keyCount; // init keys counts
+
+            if (!this.isLeaf()) {
+                for (Node child : children) {
+                    if (child != null) {
+                        result += child.subtreeSize();
+                    }
+                }
+            }
+            return result;
+        }
+
+
+        private Integer findKeyByIndex(int index) {
+            for (int i = 0; i < keyCount; i++) {
+                if (children[i] != null) {
+                    int leftSubtreeSize = children[i].subtreeSize();
+                    if (index < leftSubtreeSize) {
+                        return children[i].findKeyByIndex(index);
+                    }
+
+                    index -= leftSubtreeSize;
+                }
+
+                if (index == 0) {
+                    return keys[i];
+                }
+                index--;
+            }
+            int rightSize = children[keyCount].subtreeSize();
+            if (index < rightSize) {
+                return children[keyCount].findKeyByIndex(index);
+            }
+            return null;
+        }
     }
 
     Node root;
@@ -123,10 +180,10 @@ public class Tree {
         }
     }
 
-    public void insert(Integer key) {
+    public boolean insert(Integer key) {
         // check if input is valid
         if (key == null) {
-            throw new IllegalArgumentException("null parameter");
+            return false;
         }
 
         // case 1: empty tree
@@ -134,19 +191,20 @@ public class Tree {
             root = new Node();
             root.addKey(0, key);
             size++;
-            return;
+            return true;
         }
 
         // case 2: go to leaf
         Node leaf = root.goToLeaf(key);
         if (leaf == null) {
-            return;  // key exists in leaf || key has been added to any node on the path || found duplicate
+            return false;  // key exists in leaf || key has been added to any node on the path || found duplicate
         }
 
         int correctInd = leaf.getKeyPosition(key);
         leaf.addKey(correctInd, key);
         leaf.splitUp();
         size++;
+        return true;
     }
 
     public void insert(Collection<Integer> input) {
@@ -159,18 +217,19 @@ public class Tree {
         return size;
     }
 
-    public int size(int x) {
+    public int size(int key) {
         if (root == null) return 0;
-        Node n = findNode(root, x);
-        return (n == null) ? 0 : subtreeSize(n);
+        Node keyNode = root.findNode(key);
+        return keyNode == null ? 0 : keyNode.subtreeSize();
     }
 
-    public int get(int index) {
+    public Integer get(int index) {
         if (root == null) throw new IllegalStateException("empty tree");
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Index out of bound");
         }
-        return findIndex(root, index);
+
+        return root.findKeyByIndex(index);
     }
 
     public List<Integer> toList() {
@@ -199,70 +258,9 @@ public class Tree {
         } else if (list == null) {
             for (int i = 0; i < node.keyCount; i++) {
                 inorder(node.children[i], null, sb); // go to each child
-                sb.append(node.children[i]).append(", "); // append to string builder
+                sb.append(node.keys[i]).append(", "); // append to string builder
             }
             inorder(node.children[node.keyCount], null, sb); // go to the last one
         }
-    }
-
-
-    private int findIndex(Node node, int index) {
-        while (node != null) {
-            // size of left subtree, the total number of elements on left side of the given index
-            int leftChildSubtreeKeyCount = subtreeSize(node.children[0]);
-
-            if (node.keyCount == 1) { // for a 1key node
-                if (index < leftChildSubtreeKeyCount) { // target is in the left subtree
-                    node = node.children[0]; // go left subtree
-                    continue;
-                }
-                if (index == leftChildSubtreeKeyCount) return node.keys[0]; // found it, return
-
-                // target is in the right subtree
-                index -= leftChildSubtreeKeyCount + 1; // throw away the total # of elements in left subtree from the target index
-                node = node.children[1];  // go right subtree
-            } else { // keyCount == 2
-                if (index < leftChildSubtreeKeyCount) {  // target is in left subtree
-                    node = node.children[0]; // go left
-                    continue;
-                }
-                if (index == leftChildSubtreeKeyCount) return node.keys[0]; // found, key1 matches
-
-                // target is maybe in the mid-subtree, throw away the # of elements in left subtree
-                index -= leftChildSubtreeKeyCount + 1;
-                int midChildSubtreeKeyCount = subtreeSize(node.children[1]); // get the mid-child subtree keyCounts
-                if (index < midChildSubtreeKeyCount) { // target is in the mid-subtree
-                    node = node.children[1]; // go to mid-subtree
-                    continue;
-                }
-
-                if (index == midChildSubtreeKeyCount) return node.keys[1]; // found the target is second key
-                // move to right, skip mid and key[0]
-                index -= midChildSubtreeKeyCount + 1; // throw mid-subtree key count
-                node = node.children[2]; // go to right
-            }
-        }
-        return -1; // shouldn't reach here
-    }
-
-    private Node findNode(Node current, Integer key) {
-        while (current != null) {
-            int i = current.getKeyPosition(key); // got to the right path
-            if (i < current.keyCount && key.equals(current.keys[i])) { // key is match
-                return current;
-            }
-            if (current.isLeaf()) return null; // didn't find
-            current = current.children[i];
-        }
-        return null;
-    }
-
-    private int subtreeSize(Node node) {
-        if (node == null) return 0;
-        int result = node.keyCount;         // cur node keys
-        for (int i = 0; i <= node.keyCount; i++) {     // += all children's keysCount
-            result += subtreeSize(node.children[i]);
-        }
-        return result;
     }
 }
