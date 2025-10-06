@@ -1,6 +1,5 @@
 package TwoThreeTree;
 
-import java.security.InvalidParameterException;
 import java.util.*;
 
 public class Tree {
@@ -62,19 +61,18 @@ public class Tree {
                 Integer key1 = current.keys[0], key2 = current.keys[1], key3 = current.keys[2];
 
                 Node left = new Node();
-                left.addKey(0,key1);// key1 is left's key
+                left.addKey(0, key1);// key1 is left's key
                 left.setChild(0, current.children[0]); // set left children,  cur's child1, child2 are the left's children
                 left.setChild(1, current.children[1]);
 
-
                 Node right = new Node();
-                right.addKey(0,key3);// key3 is right's key
+                right.addKey(0, key3);// key3 is right's key
                 right.setChild(0, current.children[2]); // set right children,  cur's child3, child4 are the right's children
                 right.setChild(1, current.children[3]);
 
                 if (current.parent == null) { // current is root
                     Node newRoot = new Node();
-                    newRoot.addKey(0, key1);
+                    newRoot.addKey(0, key2);
                     newRoot.setChild(0, left);
                     newRoot.setChild(1, right);
                     root = newRoot;
@@ -128,7 +126,7 @@ public class Tree {
     public void insert(Integer key) {
         // check if input is valid
         if (key == null) {
-            throw new InvalidParameterException("null parameter");
+            throw new IllegalArgumentException("null parameter");
         }
 
         // case 1: empty tree
@@ -172,72 +170,79 @@ public class Tree {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Index out of bound");
         }
-        return select(root, index);
+        return findIndex(root, index);
     }
-
 
     public List<Integer> toList() {
         ArrayList<Integer> list = new ArrayList<>();
         if (root == null) return list;
-
-        inorder(root, list);
-
+        inorder(root, list, null);
         return list;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        List<Integer> list = toList();
-        for (Integer i : list) {
-            sb.append(i).append(", ");
-        }
+        inorder(root, null, sb);
         if (sb.length() >= 2) sb.setLength(sb.length() - 2);
         return sb.toString();
     }
 
-    private int select(Node node, int key) {
-        while (node != null) {
-            int left0 = subtreeSize(node.children[0]);  // size of left
-
-            if (node.keyCount == 1) {
-                if (key < left0) {
-                    node = node.children[0];
-                    continue;
-                }
-                if (key == left0) return node.keys[0];
-                // move to right, skip left and key[0]
-                key -= left0 + 1;
-                node = node.children[1];
-            } else { // keyCount == 2
-                if (key < left0) {
-                    node = node.children[0];
-                    continue;
-                }
-                if (key == left0) return node.keys[0];
-                key -= left0 + 1;
-
-                int left1 = subtreeSize(node.children[1]); // size of mid
-                if (key < left1) {
-                    node = node.children[1];
-                    continue;
-                }
-                if (key == left1) return node.keys[1];
-                // move to right, skip mid and key[0]
-                key -= left1 + 1;
-                node = node.children[2];
+    private void inorder(Node node, ArrayList<Integer> list, StringBuilder sb) {
+        if (node == null) return;
+        if (sb == null) {
+            for (int i = 0; i < node.keyCount; i++) {
+                inorder(node.children[i], list, null); // go to each child
+                list.add(node.keys[i]); // add key to list
             }
+            inorder(node.children[node.keyCount], list, null); // go to the last one
+        } else if (list == null) {
+            for (int i = 0; i < node.keyCount; i++) {
+                inorder(node.children[i], null, sb); // go to each child
+                sb.append(node.children[i]).append(", "); // append to string builder
+            }
+            inorder(node.children[node.keyCount], null, sb); // go to the last one
         }
-        return -1;
     }
 
-    private void inorder(Node node, ArrayList<Integer> list) {
-        if (node == null) return;
-        for (int i = 0; i < node.keyCount; i++) {
-            inorder(node.children[i], list); // go to each child
-            list.add(node.keys[i]); // add key to list
+
+    private int findIndex(Node node, int index) {
+        while (node != null) {
+            // size of left subtree, the total number of elements on left side of the given index
+            int leftChildSubtreeKeyCount = subtreeSize(node.children[0]);
+
+            if (node.keyCount == 1) { // for a 1key node
+                if (index < leftChildSubtreeKeyCount) { // target is in the left subtree
+                    node = node.children[0]; // go left subtree
+                    continue;
+                }
+                if (index == leftChildSubtreeKeyCount) return node.keys[0]; // found it, return
+
+                // target is in the right subtree
+                index -= leftChildSubtreeKeyCount + 1; // throw away the total # of elements in left subtree from the target index
+                node = node.children[1];  // go right subtree
+            } else { // keyCount == 2
+                if (index < leftChildSubtreeKeyCount) {  // target is in left subtree
+                    node = node.children[0]; // go left
+                    continue;
+                }
+                if (index == leftChildSubtreeKeyCount) return node.keys[0]; // found, key1 matches
+
+                // target is maybe in the mid-subtree, throw away the # of elements in left subtree
+                index -= leftChildSubtreeKeyCount + 1;
+                int midChildSubtreeKeyCount = subtreeSize(node.children[1]); // get the mid-child subtree keyCounts
+                if (index < midChildSubtreeKeyCount) { // target is in the mid-subtree
+                    node = node.children[1]; // go to mid-subtree
+                    continue;
+                }
+
+                if (index == midChildSubtreeKeyCount) return node.keys[1]; // found the target is second key
+                // move to right, skip mid and key[0]
+                index -= midChildSubtreeKeyCount + 1; // throw mid-subtree key count
+                node = node.children[2]; // go to right
+            }
         }
-        inorder(node.children[node.keyCount], list); // go to the last one
+        return -1; // shouldn't reach here
     }
 
     private Node findNode(Node current, Integer key) {
@@ -255,10 +260,9 @@ public class Tree {
     private int subtreeSize(Node node) {
         if (node == null) return 0;
         int result = node.keyCount;         // cur node keys
-        for (int i = 0; i <= node.keyCount; i++) {     // + all children's keys
+        for (int i = 0; i <= node.keyCount; i++) {     // += all children's keysCount
             result += subtreeSize(node.children[i]);
         }
         return result;
     }
-
 }
