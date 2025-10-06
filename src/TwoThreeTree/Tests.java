@@ -57,7 +57,6 @@ public class Tests {
 
         assertEquals(9, t1.size());
         assertEquals(9, t1.size(25));
-        System.out.println("Error here : " + t1);
         assertEquals(0, t1.size(10));
         System.out.println("10 has " + t1.size(10) + " children");
         System.out.println("25 has " + t1.size(25) + " children");

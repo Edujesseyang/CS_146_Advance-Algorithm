@@ -126,9 +126,7 @@ public class Tree {
         }
 
         private int subtreeSize() {
-
-            int result = keyCount; // init keys counts
-
+            int result = this.keyCount; // init keys counts
             if (!this.isLeaf()) {
                 for (Node child : children) {
                     if (child != null) {
@@ -223,13 +221,17 @@ public class Tree {
         return keyNode == null ? 0 : keyNode.subtreeSize();
     }
 
-    public Integer get(int index) {
+    public int get(int index) {
         if (root == null) throw new IllegalStateException("empty tree");
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Index out of bound");
         }
+        Integer res = root.findKeyByIndex(index);
+        if (res == null) { // unbox
+            throw new IndexOutOfBoundsException("index=" + index);
+        }
 
-        return root.findKeyByIndex(index);
+        return res;
     }
 
     public List<Integer> toList() {
