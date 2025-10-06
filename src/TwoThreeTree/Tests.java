@@ -1,8 +1,6 @@
 package TwoThreeTree;
 
 import org.junit.Test;
-
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,15 +10,15 @@ import static org.junit.Assert.*;
 
 public class Tests {
     @Test
-    public void testSortOrder() {
+    public void testSortOrder() { // test random 3000 elements
         List<Integer> input = new ArrayList<>();
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 3000; i++) {
             input.add((int) Math.floor(Math.random() * 1000));
         }
         Tree t1 = new Tree(input);
         List<Integer> output = t1.toList();
-        Integer compare = output.getFirst();
-        output.removeFirst();
+        Integer compare = output.get(0);
+        output.remove(0);
         for (Integer i : output) {
             assertTrue(compare < i);
             compare = i;
@@ -115,7 +113,8 @@ public class Tests {
         System.out.println("index 950 = " + n7);
 
         try {
-            int n8 = t1.get(22);
+            int n8 = t1.get(220);
+            System.out.println(n8);
         } catch (IndexOutOfBoundsException e) {
             assertEquals("Index out of bound", e.getMessage());
         }
@@ -124,13 +123,15 @@ public class Tests {
         assertEquals(0, t2.size(2));
 
         try {
-            int n9 = t1.get(-1);
+            int n8 = t1.get(-1);
+            System.out.println(n8);
         } catch (IndexOutOfBoundsException e) {
             assertEquals("Index out of bound", e.getMessage());
         }
 
         try {
-            int n9 = t2.get(0);
+            int n8 = t2.get(0);
+            System.out.println(n8);
         } catch (IllegalStateException e) {
             assertEquals("empty tree", e.getMessage());
         }
@@ -138,7 +139,7 @@ public class Tests {
         try {
             Integer i = null;
             t2.insert(i);
-        } catch (InvalidParameterException e) {
+        } catch (IllegalArgumentException e) {
             assertEquals("null parameter", e.getMessage());
         }
     }
