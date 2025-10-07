@@ -16,36 +16,35 @@ public class Tree {
             return children[0] == null;
         }
 
-        private int getKeyPosition(Integer key) {
+        private int findInsertPosition(Integer key) {
             int i = 0;
             while (i < keyCount && key.compareTo(keys[i]) > 0) i++;
             return i;
         }
 
-        private void addKey(int position, Integer key) {
-            for (int i = keyCount; i > position; i--) {
+        private void addKey(int index, Integer key) {
+            for (int i = keyCount; i > index; i--) {
                 keys[i] = keys[i - 1];
             }
-            keys[position] = key;
+            keys[index] = key;
             keyCount++;
         }
 
-        private Node goToLeaf(Integer key) {
-            Node current = this;
-            while (!current.isLeaf()) {
-                int i = current.getKeyPosition(key);
-                if (i < current.keyCount && key.equals(current.keys[i])) {
-                    return null; // found duplicate when passing
+        private boolean contain(Integer target) {
+            for (int i = 0; i < keyCount; i++) {
+                if (Objects.equals(target, keys[i])) {
+                    return true;
                 }
-
-                current = current.children[i];
             }
+            return false;
+        }
 
-            int i = current.getKeyPosition(key);
-            if (i < current.keyCount && key.equals(current.keys[i])) {
-                return null; // found duplicate in the leaf
+        private Node getTargetLeaf(Integer key) {
+            if (this.contain(key)) {
+                return null; // duplicate
             }
-            return current;
+            int i = findInsertPosition(key); // find the correct child index
+            return (children[i] == null) ? this : children[i].getTargetLeaf(key);
         }
 
         private void setChild(int childInd, Node child) {
@@ -55,82 +54,104 @@ public class Tree {
             }
         }
 
-        private void splitUp() {
-            Node current = this;
-            while (current.keyCount == 3) {
-                Integer key1 = current.keys[0], key2 = current.keys[1], key3 = current.keys[2];
+        private Node addAndSplit(Node pack) {
+            if (this.keyCount < 2) {
+                absorbNode(pack);
+                return new Node(); // dummy,
+            }
+            // unpackage input, they are received from bottom
+            int insertKey = pack.keys[0];
+            Node leftHandle = pack.children[0];
+            Node rightHandle = pack.children[1];
 
-                Node left = new Node();
-                left.addKey(0, key1);// key1 is left's key
-                left.setChild(0, current.children[0]); // set left children,  cur's child1, child2 are the left's children
-                left.setChild(1, current.children[1]);
+            // find the index to insert
+            int index = findInsertPosition(insertKey);
+            addKey(index, insertKey);
 
-                Node right = new Node();
-                right.addKey(0, key3);// key3 is right's key
-                right.setChild(0, current.children[2]); // set right children,  cur's child3, child4 are the right's children
-                right.setChild(1, current.children[3]);
+            // they are going to up
+            Node newLeft = new Node();
+            newLeft.addKey(0, keys[0]);// key1 is left's key
+            Node newRight = new Node();
+            newRight.addKey(0, keys[2]);// key3 is right's key
 
-                if (current.parent == null) { // current is root
-                    Node newRoot = new Node();
-                    newRoot.addKey(0, key2);
-                    newRoot.setChild(0, left);
-                    newRoot.setChild(1, right);
-                    root = newRoot;
-                    return;
-                }
+            switch (index) {
+                case 0: // new key add to left
+                    newLeft.setChild(0, leftHandle);
+                    newLeft.setChild(1, rightHandle);
+                    newRight.setChild(0, children[1]);
+                    newRight.setChild(1, children[2]);
+                    break;
+                case 1:
+                    newLeft.setChild(0, children[0]);
+                    newLeft.setChild(1, leftHandle);
+                    newRight.setChild(0, rightHandle);
+                    newRight.setChild(1, children[2]);
+                    break;
+                case 2:
+                    newLeft.setChild(0, children[0]);
+                    newLeft.setChild(1, children[1]);
+                    newRight.setChild(0, leftHandle);
+                    newRight.setChild(1, rightHandle);
+                    break;
+            }
 
-                // handle current's parent
-                Node parentOfCurrent = current.parent;
+            if (parent == null) { // current is root
+                Node newRoot = new Node();
+                newRoot.addKey(0, keys[1]);
+                newRoot.setChild(0, newLeft);
+                newRoot.setChild(1, newRight);
+                return newRoot;
+            }
 
-                int childInd = 0; // childInd is also keyInd
-                while (parentOfCurrent.children[childInd] != current) childInd++; // find the correct childInd
+            // pack returning node
+            Node packToUp = new Node();
+            packToUp.addKey(0, keys[1]);
+            packToUp.setChild(0, newLeft);
+            packToUp.setChild(1, newRight);
+            return this.parent.addAndSplit(packToUp);
+        }
 
 
-                // make space for new key
-                for (int i = parentOfCurrent.keyCount; i > childInd; i--) {
-                    parentOfCurrent.keys[i] = parentOfCurrent.keys[i - 1];
-                }
-                parentOfCurrent.keys[childInd] = key2; // put key into space
+        private void absorbNode(Node keyPackage) {
+            // unpackage
+            Integer key = keyPackage.keys[0];
+            Node leftHandle = keyPackage.children[0];
+            Node rightHandle = keyPackage.children[1];
 
-                // make space for new child( childInd + 1)
-                for (int i = parentOfCurrent.keyCount + 1; i > childInd + 1; i--) {
-                    parentOfCurrent.children[i] = parentOfCurrent.children[i - 1];
-                }
+            int index = findInsertPosition(key);
+            addKey(index, key);
 
-                // link the left and right child
-                parentOfCurrent.setChild(childInd, left);
-                parentOfCurrent.setChild(childInd + 1, right);
+            if (leftHandle == null && rightHandle == null) {
+                return;
+            }
 
-                parentOfCurrent.keyCount++;
-                current = parentOfCurrent; // keep handling its parent.
+            switch (index) {
+                case 0:
+                    setChild(2, children[1]);
+                    setChild(0, leftHandle);
+                    setChild(1, rightHandle);
+                    break;
+                case 1:
+                    setChild(1, leftHandle);
+                    setChild(2, rightHandle);
+                    break;
             }
         }
 
-        private Node findNode(Integer target) {
-            for (Integer key : keys) { // check all keys
-                if (Objects.equals(key, target)) { // found it, return this
-                    return this;
-                }
-            }
+        private Node findNodeContains(Integer target) {
+            if (contain(target)) return this;
+            int index = findInsertPosition(target);
 
-            if (!this.isLeaf()) {
-                for (Node child : children) { // recursively check each child
-                    if (child != null) {
-                        child.findNode(target);
-                    }
-
-                }
-            }
-
-            return null;
+            return children[index] == null ? null : children[index].findNodeContains(target);
         }
+
 
         private int subtreeSize() {
             int result = this.keyCount; // init keys counts
             if (!this.isLeaf()) {
-                for (Node child : children) {
-                    if (child != null) {
-                        result += child.subtreeSize();
+                for (int i = 0; i <= keyCount; i++) {
+                    if (children[i] != null) {
+                        result += children[i].subtreeSize();
                     }
                 }
             }
@@ -140,24 +161,26 @@ public class Tree {
 
         private Integer findKeyByIndex(int index) {
             for (int i = 0; i < keyCount; i++) {
-                if (children[i] != null) {
-                    int leftSubtreeSize = children[i].subtreeSize();
-                    if (index < leftSubtreeSize) {
-                        return children[i].findKeyByIndex(index);
-                    }
-
-                    index -= leftSubtreeSize;
+                // prevent null child
+                int leftSubtreeSize = (children[i] == null) ? 0 : children[i].subtreeSize();
+                if (index < leftSubtreeSize) {
+                    assert children[i] != null; // index never less than 0
+                    return children[i].findKeyByIndex(index);
                 }
+                index -= leftSubtreeSize;
 
                 if (index == 0) {
                     return keys[i];
                 }
                 index--;
             }
-            int rightSize = children[keyCount].subtreeSize();
+            // prevent null child
+            int rightSize = (children[keyCount] == null) ? 0 : children[keyCount].subtreeSize();
             if (index < rightSize) {
+                assert children[keyCount] != null;
                 return children[keyCount].findKeyByIndex(index);
             }
+
             return null;
         }
     }
@@ -192,15 +215,21 @@ public class Tree {
             return true;
         }
 
-        // case 2: go to leaf
-        Node leaf = root.goToLeaf(key);
+        // find the target leaf to add
+        Node leaf = root.getTargetLeaf(key);
         if (leaf == null) {
-            return false;  // key exists in leaf || key has been added to any node on the path || found duplicate
+            return false; // find duplicate
         }
 
-        int correctInd = leaf.getKeyPosition(key);
-        leaf.addKey(correctInd, key);
-        leaf.splitUp();
+        Node keyPackage = new Node();
+        keyPackage.addKey(0, key);
+        Node dummy = leaf.addAndSplit(keyPackage);
+        if (dummy.keyCount == 0) {
+            size++;
+            return true;
+        } else {
+            root = dummy;
+        }
         size++;
         return true;
     }
@@ -216,9 +245,17 @@ public class Tree {
     }
 
     public int size(int key) {
-        if (root == null) return 0;
-        Node keyNode = root.findNode(key);
-        return keyNode == null ? 0 : keyNode.subtreeSize();
+        if (root == null) return 0; // empty tree
+
+        Node keyNode = root.findNodeContains(key);
+        if (keyNode == null) return 0; // no key found
+
+        if (keyNode.isLeaf()) {
+            return 1;
+        }
+
+        int index = keyNode.findInsertPosition(key);
+        return keyNode.children[index].subtreeSize() + keyNode.children[index + 1].subtreeSize() + 1;
     }
 
     public int get(int index) {
@@ -227,42 +264,31 @@ public class Tree {
             throw new IndexOutOfBoundsException("Index out of bound");
         }
         Integer res = root.findKeyByIndex(index);
-        if (res == null) { // unbox
-            throw new IndexOutOfBoundsException("index=" + index);
+        if (res == null) {
+            throw new IndexOutOfBoundsException("Index out of bound"); // for unboxing Integer to int
         }
-
         return res;
     }
 
     public List<Integer> toList() {
         ArrayList<Integer> list = new ArrayList<>();
         if (root == null) return list;
-        inorder(root, list, null);
+        inorder(root, list);
         return list;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        inorder(root, null, sb);
-        if (sb.length() >= 2) sb.setLength(sb.length() - 2);
-        return sb.toString();
+        return toList().toString();
     }
 
-    private void inorder(Node node, ArrayList<Integer> list, StringBuilder sb) {
+    private void inorder(Node node, ArrayList<Integer> list) {
         if (node == null) return;
-        if (sb == null) {
-            for (int i = 0; i < node.keyCount; i++) {
-                inorder(node.children[i], list, null); // go to each child
-                list.add(node.keys[i]); // add key to list
-            }
-            inorder(node.children[node.keyCount], list, null); // go to the last one
-        } else if (list == null) {
-            for (int i = 0; i < node.keyCount; i++) {
-                inorder(node.children[i], null, sb); // go to each child
-                sb.append(node.keys[i]).append(", "); // append to string builder
-            }
-            inorder(node.children[node.keyCount], null, sb); // go to the last one
+        for (int i = 0; i < node.keyCount; i++) {
+            inorder(node.children[i], list); // go to each child
+            list.add(node.keys[i]); // add key to list
         }
+        inorder(node.children[node.keyCount], list); // go to the last one
     }
 }
+
