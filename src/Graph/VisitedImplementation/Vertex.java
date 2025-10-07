@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Vertex<T> {
+    private static final int id = 0;  // FIXME: I want a universal id for each vertex in the graph
     T data;
     List<Edge> incomingEdges = new ArrayList<>();
     List<Edge> outGoingEdges = new ArrayList<>();
