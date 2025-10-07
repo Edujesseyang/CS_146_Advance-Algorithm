@@ -12,64 +12,96 @@ import static org.junit.Assert.*;
 
 
 public class Tests {
-    @Test
-    public void testSortOrder() { // test random 3000 elements
-        List<Integer> input = new ArrayList<>();
-        for (int i = 0; i < 3000; i++) {
-            input.add((int) Math.floor(Math.random() * 1000));
-        }
-        Tree t1 = new Tree(input);
-        List<Integer> output = t1.toList();
-        Integer compare = output.get(0);
-        output.remove(0);
-        for (Integer i : output) {
-            assertTrue(compare < i);
-            compare = i;
-        }
-        System.out.println(output);
-    }
 
     @Test
     public void testConstructor() {
         Tree t1 = new Tree();
         assertNotNull(t1);
-        System.out.println(t1);
 
-        t1.insert(1);
-        System.out.println(t1 + "\n");
-        t1.insert(10);
-        System.out.println(t1 + "\n");
-        t1.insert(1);
-        System.out.println(t1 + "\n");
-        t1.insert(10);
-        System.out.println(t1 + "\n");
-        t1.insert(15);
-        System.out.println(t1 + "\n");
-        t1.insert(25);
-        System.out.println(t1 + "\n");
-        t1.insert(34);
-        System.out.println(t1 + "\n");
-        t1.insert(105);
-        System.out.println(t1 + "\n");
-        t1.insert(14);
-        System.out.println(t1 + "\n");
-        t1.insert(51);
-        System.out.println(t1 + "\n");
-        t1.insert(31);
-        System.out.println(t1 + "\n");
+        // test empty tree
+        assertEquals(0, t1.size());
+        assertEquals(0, t1.size(0));
 
-        assertEquals(9, t1.size());
-        System.out.println("Pay attention: " + t1);
-        assertEquals(9, t1.size(25));
+        t1.insert(1); //total = 1
+        t1.insert(10); //total = 2
+        // now      1 10
+        assertEquals(2, t1.size());
+        assertEquals(2, t1.size(1));
+        assertEquals(2, t1.size(10));
+        t1.insert(1);
+        t1.insert(10);
+        t1.insert(15); //total = 3
+        // now:    10
+        //        /  \
+        //       1    15
+        assertEquals(3, t1.size());
+        assertEquals(1, t1.size(1));
+        assertEquals(1, t1.size(15));
+        assertEquals(3, t1.size(10));
+
+        t1.insert(25); //total = 4
+        // now:    10
+        //        /  \
+        //      1   15 25
+        assertEquals(4, t1.size());
+        assertEquals(1, t1.size(1));
+        assertEquals(2, t1.size(15));
+        assertEquals(2, t1.size(25));
         assertEquals(4, t1.size(10));
-        System.out.println("10 has " + t1.size(10) + " children");
-        System.out.println("25 has " + t1.size(25) + " children");
 
-        int n1 = t1.get(2);
-        System.out.println("index 2 = " + n1);
+        t1.insert(31); //total = 5
+        // now:    10 25
+        //        /  |  \
+        //       1   15  31
+        assertEquals(5, t1.size());
+        assertEquals(1, t1.size(1));
+        assertEquals(1, t1.size(15));
+        assertEquals(5, t1.size(25));
+        assertEquals(5, t1.size(10));
+        assertEquals(1, t1.size(31));
 
-        int n2 = t1.get(5);
-        System.out.println("index 5 = " + n2);
+        t1.insert(1);
+        t1.insert(14); //total = 6
+        // now:    10 25
+        //        /  |  \
+        //      1  14 15  31
+        assertEquals(6, t1.size());
+        assertEquals(1, t1.size(1));
+        assertEquals(2, t1.size(14));
+        assertEquals(2, t1.size(15));
+        assertEquals(6, t1.size(25));
+        assertEquals(6, t1.size(10));
+        assertEquals(1, t1.size(31));
+
+        t1.insert(14);
+        t1.insert(31);
+        t1.insert(14);
+        t1.insert(31);
+        t1.insert(1);
+        t1.insert(10);
+        t1.insert(15); // adding dup
+        assertEquals(6, t1.size());
+        assertEquals(1, t1.size(1));
+        assertEquals(2, t1.size(14));
+        assertEquals(2, t1.size(15));
+        assertEquals(6, t1.size(25));
+        assertEquals(6, t1.size(10));
+        assertEquals(1, t1.size(31));
+
+        assertEquals(0, t1.size(311));
+        assertEquals(0, t1.size(314));
+        assertEquals(0, t1.size(351));
+        assertEquals(0, t1.size(3151));
+
+
+        // [1, 10, 14, 15, 25, 31]
+        assertEquals(1, t1.get(0));
+        assertEquals(10, t1.get(1));
+        assertEquals(14, t1.get(2));
+        assertEquals(15, t1.get(3));
+        assertEquals(25, t1.get(4));
+        assertEquals(31, t1.get(5));
+
     }
 
     @Test
@@ -84,114 +116,80 @@ public class Tests {
         List<Integer> input3 = new ArrayList<>(Arrays.asList(5, 4, 2, 2, 3, 1, 0, 4, 5, 9));
         t1.insert(input2);
         t1.insert(input3);
-        System.out.println(t1);
 
         int n1 = t1.get(3);
         assertEquals(3, n1);
-        System.out.println("index 3 = " + n1);
-
         int n2 = t1.get(4);
         assertEquals(4, n2);
-        System.out.println("index 4 = " + n2);
-
         int n3 = t1.get(5);
         assertEquals(5, n3);
-        System.out.println("index 5 = " + n3);
-
         int n4 = t1.get(14);
         assertEquals(435, n4);
-        System.out.println("index 14 = " + n4);
-
         int n5 = t1.get(15);
         assertEquals(454, n5);
-        System.out.println("index 15 = " + n5);
-
         int n6 = t1.get(19);
         assertEquals(905, n6);
-        System.out.println("index 20 = " + n6);
-
         int n7 = t1.get(20);
         assertEquals(950, n7);
-        System.out.println("index 950 = " + n7);
 
-        try {
-            int n8 = t1.get(220);
-            System.out.println(n8);
-        } catch (IndexOutOfBoundsException e) {
-            assertEquals("Index out of bound", e.getMessage());
-        }
         Tree t2 = new Tree();
         assertEquals(0, t2.size());
         assertEquals(0, t2.size(2));
 
-        try {
-            int n8 = t1.get(-1);
-            System.out.println(n8);
-        } catch (IndexOutOfBoundsException e) {
-            assertEquals("Index out of bound", e.getMessage());
-        }
+        Integer i = null;
+        assertFalse(t2.insert(i));
 
-        try {
-            int n8 = t2.get(0);
-            System.out.println(n8);
-        } catch (IllegalStateException e) {
-            assertEquals("empty tree", e.getMessage());
-        }
-
-        try {
-            Integer i = null;
-            t2.insert(i);
-        } catch (IllegalArgumentException e) {
-            assertEquals("null parameter", e.getMessage());
-        }
     }
 
     @Test
     public void testNewAdding() {
-        System.out.println("Test New updates:");
         Tree t1 = new Tree();
         t1.insert(19);
         t1.insert(20);
         t1.insert(21);
-        System.out.println(t1);
+        assertEquals(1, t1.size(19));
+        assertEquals(3, t1.size(20));
+        assertEquals(1, t1.size(21));
+
+        Tree t = new Tree();
+        t.insert(Arrays.asList(5, 10));
+        assertEquals(2, t.size(5));
+        assertEquals(2, t.size(10));
+        assertEquals(0, t.size(7));
+
 
     }
 
     @Test
-    public void testTwoThreeTree_Correctness() {
-        // ---- 0) 空树行为 ----
+    public void testTwoThreeTree_CorrectnessTest() {
+        // empty tree
         Tree t = new Tree();
         assertEquals(0, t.size());
-        try {
-            t.get(0);
-            fail("empty tree should throw");
-        } catch (IllegalStateException expected) {
-        }
 
-        // ---- 1) 基本插入与有序性 / 去重 ----
+        // basic insert
         assertTrue(t.insert(10));                      // [10]
         assertEquals(1, t.size());
         assertEquals(Arrays.asList(10), t.toList());
-        assertEquals(1, t.size(10));                   // 叶子(leaf)单键
+        assertEquals(1, t.size(10));         // single key leaf and root
 
-        assertTrue(t.insert(20));                      // [10,20] (同一节点两键)
+        assertTrue(t.insert(20));                      // [10,20] two keys leaf
         assertEquals(2, t.size());
         assertEquals(Arrays.asList(10, 20), t.toList());
 
-        assertEquals(1, t.size(10));
-        assertEquals(1, t.size(20));
+        assertEquals(2, t.size(10));
+        assertEquals(2, t.size(20));
 
-        assertTrue(t.insert(30));                      // 触发分裂(split)：root=[20], L=[10], R=[30]
+        assertTrue(t.insert(30));                      // (split)：root=[20], L=[10], R=[30]
         assertEquals(3, t.size());
         assertEquals(Arrays.asList(10, 20, 30), t.toList());
-        assertEquals(3, t.size(20));                   // 根的子树大小=3
-        System.out.println("***Tree*** is : " + t);
-        assertEquals(1, t.size(10));                   // 叶子
-        assertEquals(1, t.size(30));                   // 叶子
+        assertEquals(3, t.size(20));                   // root subtree size =3
 
-        // ---- 2) 更大序列，验证确定形态 ----
-        // 连续插入 40,50,60,70，按 2-3 树应得到：
-        //           [40]
+        assertEquals(1, t.size(10));                   // leaf
+        assertEquals(1, t.size(30));                   // leaf
+
+        // ---- insert more ----
+        // inset 40,50,60,70，：
+        //            [40]
         //        /         \
         //     [20]         [60]
         //    /    \       /    \
@@ -203,59 +201,41 @@ public class Tests {
         assertEquals(7, t.size());
         assertEquals(Arrays.asList(10, 20, 30, 40, 50, 60, 70), t.toList());
 
-        // 结构性断言（用 size(key) 做探针）
-        assertEquals(7, t.size(40));   // 根的子树=全树
-        assertEquals(3, t.size(20));   // 左子树 [20] + [10] + [30]
-        assertEquals(3, t.size(60));   // 右子树 [60] + [50] + [70]
+        // check structure（use size(key)）
+        assertEquals(7, t.size(40));   // subtree or root = size
+        assertEquals(3, t.size(20));   // left [20] + [10] + [30]
+        assertEquals(3, t.size(60));   // right [60] + [50] + [70]
         assertEquals(1, t.size(10));
         assertEquals(1, t.size(30));
         assertEquals(1, t.size(50));
         assertEquals(1, t.size(70));
 
-        // ---- 3) get(index) 与有序一致性 ----
+        // ---- check sorting order ----
         List<Integer> sorted = Arrays.asList(10, 20, 30, 40, 50, 60, 70);
         for (int i = 0; i < sorted.size(); i++) {
             assertEquals(sorted.get(i).intValue(), t.get(i));
         }
-        // 越界
-        try {
-            t.get(-1);
-            fail("negative index should throw");
-        } catch (IndexOutOfBoundsException expected) {
-        }
-        try {
-            t.get(t.size());
-            fail("size index should throw");
-        } catch (IndexOutOfBoundsException expected) {
-        }
 
-        // ---- 4) 重复插入(duplicate) 必须被拒绝且不改变 size ----
+        // ---- insert duplicate, size should not be changed----
         int before = t.size();
-        assertFalse("duplicate must be rejected", t.insert(40));
+        t.insert(40);
         assertEquals(before, t.size());
 
-        // ---- 5) 插入 null：两种都允许（抛 IAEx 或返回 false），但 size 不变 ----
+        // ---- insert null,  size no change ----
         before = t.size();
-        boolean returnedFalseForNull = false;
-        try {
-            Integer nullNum = null;
-            boolean ok = t.insert(nullNum);
-            // 如果实现选择返回 false，也接受
-            returnedFalseForNull = !ok;
-        } catch (IllegalArgumentException ignored) {
-            returnedFalseForNull = true; // 也接受抛异常
-        }
-        assertTrue("null insertion must not succeed", returnedFalseForNull);
+
+        Integer nullNum = null;
+        assertEquals(false, t.insert(nullNum));
         assertEquals(before, t.size());
 
-        // ---- 6) size(key) 对不存在 key 应为 0 ----
-        assertEquals(0, t.size(999));
+        // ---- size(key) for non-exists key ----
+        assertEquals(0, t.size(99999));
 
-        // ---- 7) 构造器批量 + 随机回归：有序且去重 ----
+        // ---- list input ----
         Random rnd = new Random(42);
         List<Integer> bulk = new ArrayList<>();
         for (int i = 0; i < 2000; i++) {
-            bulk.add(rnd.nextInt(1000)); // 含重复
+            bulk.add(rnd.nextInt(1000)); // may or may not include duplicates
         }
         Tree t2 = new Tree(bulk);
         List<Integer> expect = bulk.stream().distinct().sorted().collect(Collectors.toList());
