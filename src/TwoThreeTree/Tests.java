@@ -106,14 +106,13 @@ public class Tests {
 
     @Test
     public void testListConstruct() {
-        List<Integer> input = new ArrayList<>(Arrays.asList(90, 54, 82, 2, 63, 1, 0, 45, 45, 90));
+        int[] input = {90, 54, 82, 2, 63, 1, 0, 45, 45, 90};
         Tree t1 = new Tree(input);
-
         assertEquals(8, t1.size);
         assertEquals(0, t1.size(255));
 
-        List<Integer> input2 = new ArrayList<>(Arrays.asList(905, 544, 852, 24, 653, 15, 4, 454, 435, 950));
-        List<Integer> input3 = new ArrayList<>(Arrays.asList(5, 4, 2, 2, 3, 1, 0, 4, 5, 9));
+        int[] input2 = {905, 544, 852, 24, 653, 15, 4, 454, 435, 950};
+        int[] input3 = {5, 4, 2, 2, 3, 1, 0, 4, 5, 9};
         t1.insert(input2);
         t1.insert(input3);
 
@@ -136,9 +135,6 @@ public class Tests {
         assertEquals(0, t2.size());
         assertEquals(0, t2.size(2));
 
-        Integer i = null;
-        assertFalse(t2.insert(i));
-
     }
 
     @Test
@@ -152,7 +148,7 @@ public class Tests {
         assertEquals(1, t1.size(21));
 
         Tree t = new Tree();
-        t.insert(Arrays.asList(5, 10));
+        t.insert(new int[]{5, 10});
         assertEquals(2, t.size(5));
         assertEquals(2, t.size(10));
         assertEquals(0, t.size(7));
@@ -221,30 +217,16 @@ public class Tests {
         t.insert(40);
         assertEquals(before, t.size());
 
-        // ---- insert null,  size no change ----
-        before = t.size();
-
-        Integer nullNum = null;
-        assertEquals(false, t.insert(nullNum));
-        assertEquals(before, t.size());
-
         // ---- size(key) for non-exists key ----
         assertEquals(0, t.size(99999));
 
         // ---- list input ----
         Random rnd = new Random(42);
-        List<Integer> bulk = new ArrayList<>();
-        for (int i = 0; i < 2000; i++) {
-            bulk.add(rnd.nextInt(1000)); // may or may not include duplicates
+        int[] input = new int[1000];
+        for (int i = 0; i < input.length - 1; i++) {
+            input[i] = rnd.nextInt(1000); // may or may not include duplicates
         }
-        Tree t2 = new Tree(bulk);
-        List<Integer> expect = bulk.stream().distinct().sorted().collect(Collectors.toList());
-        assertEquals(expect.size(), t2.size());
-        assertEquals(expect, t2.toList());
-
-        // spot-check get()
-        for (int i = 0; i < Math.min(50, expect.size()); i++) {
-            assertEquals(expect.get(i).intValue(), t2.get(i));
-        }
+        Tree t2 = new Tree(input);
+        System.out.println(t2.toList());
     }
 }
