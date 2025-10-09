@@ -17,7 +17,11 @@ public class Tests {
     public void testConstructor() {
         Tree t1 = new Tree();
         assertNotNull(t1);
-
+        try {
+            int key = t1.get(244);
+        } catch (IndexOutOfBoundsException e) {
+            assertEquals("empty tree", e.getMessage());
+        }
         // test empty tree
         assertEquals(0, t1.size());
         assertEquals(0, t1.size(0));
@@ -101,6 +105,12 @@ public class Tests {
         assertEquals(15, t1.get(3));
         assertEquals(25, t1.get(4));
         assertEquals(31, t1.get(5));
+
+        try {
+            int key = t1.get(244);
+        } catch (IndexOutOfBoundsException e) {
+            assertEquals("index out of bound", e.getMessage());
+        }
 
     }
 
