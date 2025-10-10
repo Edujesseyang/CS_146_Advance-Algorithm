@@ -124,19 +124,24 @@ public class Tree {
         }
 
         private int findKey(int index) {
-            for (int i = 0; i < keyCount; i++) {
-                int childSize = (children[i] == null) ? 0 : children[i].numOfSubtreeKeys;
+            int goingToInd = keyCount; // init the destination is the last child
+            int i = 0;
+            while (i < keyCount) {
+                int childSize = (children[i] == null) ? 0 : children[i].numOfSubtreeKeys; // check left side size
 
-                if (index < childSize) return children[i].findKey(index);
+                if (index < childSize) { // go to left
+                    goingToInd = i; // update the destination index
+                    break;
+                }
+
                 index -= childSize; // take off the size of the child that we did
 
-                if (index == 0) return keys[i]; // bingo
-                index--; // take off the key
+                if (index == 0) return keys[i]; // check key
+                index--; // dec 1 for the check we just checked
+                i++;
             }
-            int lastSize = (children[keyCount] == null) ? 0 : children[keyCount].numOfSubtreeKeys; // handle the last child
-            if (index < lastSize) return children[keyCount].findKey(index);
 
-            throw new IndexOutOfBoundsException("index out of bound");
+            return children[goingToInd].findKey(index); // go to the destination
         }
     }
 
@@ -196,7 +201,7 @@ public class Tree {
     }
 
     public int get(int index) {
-        if (root == null) throw new IndexOutOfBoundsException("empty tree");
+        if (root == null || index < 0 || index >= size) throw new IndexOutOfBoundsException("Index out of bound");
         return root.findKey(index);
     }
 

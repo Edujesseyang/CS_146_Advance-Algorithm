@@ -48,8 +48,8 @@ public class Graph {
         for (int i = size; i <= max; i++) backTrackTable.add(new int[2]);
     }
 
-    void resetBackTrackTable(){
-        backTrackTable.
+    void resetBackTrackTable() {
+        backTrackTable.clear();
     }
 
     private void dfs(int from, int to) {

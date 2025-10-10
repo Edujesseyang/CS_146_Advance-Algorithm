@@ -20,7 +20,7 @@ public class Tests {
         try {
             int key = t1.get(244);
         } catch (IndexOutOfBoundsException e) {
-            assertEquals("empty tree", e.getMessage());
+            assertEquals("Index out of bound", e.getMessage());
         }
         // test empty tree
         assertEquals(0, t1.size());
@@ -109,7 +109,7 @@ public class Tests {
         try {
             int key = t1.get(244);
         } catch (IndexOutOfBoundsException e) {
-            assertEquals("index out of bound", e.getMessage());
+            assertEquals("Index out of bound", e.getMessage());
         }
 
     }
