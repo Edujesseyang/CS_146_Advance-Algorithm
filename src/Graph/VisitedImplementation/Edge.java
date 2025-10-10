@@ -3,11 +3,12 @@ package Graph.VisitedImplementation;
 import java.util.Objects;
 
 public class Edge implements Comparable<Edge> {
+    int id = -1;
     int weight;
-    Vertex<?> from;
-    Vertex<?> to;
+    int from;
+    int to;
 
-    Edge(Vertex<?> from, Vertex<?> to, int weight) {
+    Edge(int from, int to, int weight) {
         this.from = from;
         this.to = to;
         this.weight = weight;
