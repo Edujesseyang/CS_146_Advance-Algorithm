@@ -7,7 +7,8 @@ import java.util.Stack;
 
 public class Graph {
     static int idCounter = 0;
-    List<List<Integer>> outGoingEdges = new ArrayList<>(); // store the id of edge
+    List<List<Integer>> outGoingList = new ArrayList<>(); // store the id of edge
+    List<List<Integer>> inCommingList = new ArrayList<>();
     /*  back track table example
      | vertex | outGoingEdges |
      | 4      | null          |  --> vertex without any outgoing edges
@@ -24,8 +25,11 @@ public class Graph {
      | 3      | 2           | 1.3      |
      | 2      | 1           | 2.4      |
     * */
+    int size;
 
-    Graph() {
+    Graph(int size) {
+        this.size = size;
+        ensureSpace(size);
     }
 
     void connect(int from, int to, int weight) {
@@ -34,17 +38,17 @@ public class Graph {
 
         edge.id = idCounter++;  // giving new edge an id, means it is active now.
         edgeList.add(edge); // store edge
-        if (outGoingEdges.get(from) == null) { // if vertex has no edge, create one
-            outGoingEdges.set(from, new ArrayList<>(List.of(edge.id)));
+        if (outGoingList.get(from) == null) { // if vertex has no edge, create one
+            outGoingList.set(from, new ArrayList<>(List.of(edge.id)));
         } else {
-            outGoingEdges.get(from).add(edge.id); // if there is one, add a new one
+            outGoingList.get(from).add(edge.id); // if there is one, add a new one
         }
     }
 
     void ensureSpace(int max) {
-        int size = outGoingEdges.size();
-        if (max <= size) return;
-        for (int i = size; i <= max; i++) outGoingEdges.add(new ArrayList<>());
+        if (max < size) return;
+        for (int i = size; i <= max; i++) outGoingList.add(new ArrayList<>());
+        for (int i = size; i <= max; i++) inCommingList.add(new ArrayList<>());
         for (int i = size; i <= max; i++) backTrackTable.add(new int[2]);
     }
 
@@ -60,7 +64,7 @@ public class Graph {
         stk.push(from);
         while (!stk.isEmpty()) {
             int cur = stk.pop();
-            List<Integer> neighbors = outGoingEdges.get(cur);
+            List<Integer> neighbors = outGoingList.get(cur);
             for (int i : neighbors) {
                 Edge e = edgeList.get(i);
                 if (e.to == to) backTrackTable.set(to, new int[]{i, e.weight});

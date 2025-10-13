@@ -5,7 +5,7 @@ import org.junit.*;
 public class Tests {
     @Test
     public void testMakingGraph() {
-        Graph g1 = new Graph();
+        Graph g1 = new Graph(5);
         g1.connect(1, 2, 1);
         g1.connect(2, 3, 1);
         g1.connect(3, 4, 1);
