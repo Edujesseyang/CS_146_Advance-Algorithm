@@ -1,4 +1,4 @@
-package TwoThreeTree;
+package Tree.TwoThreeTree;
 
 import java.util.*;
 
