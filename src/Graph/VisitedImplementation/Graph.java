@@ -6,6 +6,19 @@ import java.util.List;
 import java.util.Stack;
 
 public class Graph {
+    private class Edge {
+        int from;
+        int to;
+        int weight;
+        static int id;
+
+        private Edge(int from, int to, int weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+
     static int idCounter = 0;
     List<List<Integer>> outGoingList = new ArrayList<>(); // store the id of edge
     List<List<Integer>> inCommingList = new ArrayList<>();

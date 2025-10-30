@@ -25,8 +25,6 @@ public class Graph {
 
     /**
      * Kahn's Algorithm
-     *
-     * @return sortedList in topological order
      */
     List<Integer> topologicalSort() {
         Deque<Integer> queue = new ArrayDeque<>(); // que for looping

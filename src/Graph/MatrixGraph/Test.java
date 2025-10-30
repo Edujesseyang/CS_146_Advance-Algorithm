@@ -1,0 +1,30 @@
+package Graph.MatrixGraph;
+
+public class Test {
+    public static void main(String[] args) {
+
+       Graph g1 = new Graph(5); // 0 -> 1 -> 2 -> 3 -> 4
+        g1.connect(0, 1);
+        g1.connect(1, 2);
+        g1.connect(2, 3);
+        g1.connect(3, 4);
+        System.out.println(g1.getTopologicalOrder());
+
+
+        Graph g2 = new Graph(20);
+        g2.connect(0,1);
+        g2.connect(0,2);
+        g2.connect(2,3);
+        g2.connect(1,4);
+        g2.connect(3,5);
+        g2.connect(4,6);
+        g2.connect(6,7);
+        g2.connect(4,8);
+        g2.connect(4,11);
+        g2.connect(8,15);
+        g2.connect(7,17);
+        g2.connect(7,15);
+        g2.connect(8,16);
+        System.out.println(g2.getTopologicalOrder());
+    }
+}

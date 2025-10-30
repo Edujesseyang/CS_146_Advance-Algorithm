@@ -58,7 +58,6 @@ class Graph {
 
 
     int dfs(Vertex v) {
-
         v.color = 1;
         int end = v.id;
         for (Integer i : v.outGoingList) {
