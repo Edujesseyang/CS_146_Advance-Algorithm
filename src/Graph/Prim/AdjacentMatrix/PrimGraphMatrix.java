@@ -1,13 +1,15 @@
-package Graph.Prim.Matrix;
+package Graph.Prim.AdjacentMatrix;
+
+import Graph.Prim.Prim;
 
 import java.util.*;
 
-public class Graph {
-    private int[][] matrix;
-    private int size;
+public class PrimGraphMatrix implements Prim {
+    private final int[][] matrix;
+    private final int size;
     private final int MAX_WEIGHT = 1000;
 
-    Graph(int size) {
+    public PrimGraphMatrix(int size) {
         matrix = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -17,7 +19,7 @@ public class Graph {
         this.size = size;
     }
 
-    void connect(int from, int to, int weight) {
+    public void connect(int from, int to, int weight) {
         matrix[from][to] = weight;
         matrix[to][from] = weight;
     }
@@ -25,7 +27,7 @@ public class Graph {
     /**
      * returns minimal spanning tree if all vertices are connected. if not, return minimal spanning jungle.
      */
-    List<int[]> getMST() {
+    public List<int[]> getMST() {
         int[] price = new int[size]; // price record of v to component
         boolean[] isInMST = new boolean[size];  // flag is v is in MST
         int[] pred = new int[size];   // pred record

@@ -1,9 +1,9 @@
-package Graph.KahnAlgorithm;
+package Graph.TopologicalSort.KahnAlgorithm;
 
 public class Test {
     public static void main(String[] args) {
 
-        Graph g1 = new Graph(5); // 0 -> 1 -> 2 -> 3 -> 4
+        KhanTopo g1 = new KhanTopo(5); // 0 -> 1 -> 2 -> 3 -> 4
         g1.connect(0, 1);
         g1.connect(1, 2);
         g1.connect(2, 3);
@@ -11,7 +11,7 @@ public class Test {
         System.out.println(g1.topologicalSort());
 
 
-        Graph g2 = new Graph(20);
+        KhanTopo g2 = new KhanTopo(20);
         g2.connect(0,1);
         g2.connect(0,2);
         g2.connect(2,3);

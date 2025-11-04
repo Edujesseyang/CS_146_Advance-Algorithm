@@ -1,12 +1,9 @@
-package Graph.TopologicalSortDFS;
+package Graph.TopologicalSort.DfsMethod;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
-class Graph {
-
+class dfsGetTopo {
     private class Vertex {
         int id;
         List<Integer> outGoingList;
@@ -23,7 +20,7 @@ class Graph {
 
     List<Vertex> vertices;
 
-    Graph() {
+    dfsGetTopo() {
         this.vertices = new ArrayList<>();
     }
 

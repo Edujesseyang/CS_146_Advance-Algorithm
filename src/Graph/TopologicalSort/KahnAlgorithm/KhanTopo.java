@@ -1,14 +1,13 @@
-package Graph.KahnAlgorithm;
+package Graph.TopologicalSort.KahnAlgorithm;
 
-import java.sql.Array;
 import java.util.*;
 
-public class Graph {
+public class KhanTopo {
     List<List<Integer>> outgoingList;
     List<List<Integer>> incomingList;
     int size;
 
-    Graph(int size) {
+    KhanTopo(int size) {
         this.size = size;
         outgoingList = new ArrayList<>(size);
         incomingList = new ArrayList<>(size);
