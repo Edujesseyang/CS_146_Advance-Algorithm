@@ -28,7 +28,7 @@ public class Schedule {
 
         public int start() {
             finish();
-            if (!topologicalOrder.contains(this.jobId)) return -1; // linkedHasSet contain  O(1)
+            if (!topologicalOrder.contains(this.jobId)) return -1; // linkedHashSet contain  O(1)
             return this.pred == null ? 0 : this.pred.earliestFinish;  // no pred means can start at time=0
         }
     }
